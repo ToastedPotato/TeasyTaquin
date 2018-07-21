@@ -5,18 +5,20 @@
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
       <link rel="stylesheet" type="text/css" href="taquin.css"></link>
       <title>Taquin</title>
+      <script type="text/javascript" src="jquery.js"></script>
+      <script type="text/javascript" src="taquin.js"></script>
    </head>
    <body>
      <div id="form">
        <form action="">
          <fieldset>
            <legend>Description</legend>
-           <label>URL de l'image </label><input type="text" /><br/>
-           <label>Nombre de lignes </label><input type="text"/>
-           <label>de colonnes </label><input type="text" />
-           <label>Affichage des numéros</label><input type="checkbox"/>
-           <input type="button" value = "Afficher"/>
-           <input type="button" value = "Brasser les tuiles"/>
+           <label>URL de l'image </label><input name="url" type="text" /><br/>
+           <label>Nombre de lignes </label><input name="lignes" type="text"/>
+           <label>de colonnes </label><input name="colonnes" type="text" />
+           <label>Affichage des numéros</label><input name="numeros" type="checkbox"/>
+           <input id="afficher" type="button" value = "Afficher"/>
+           <input id="brasser" type="button" value = "Brasser les tuiles"/>
            <div id="deplacement">Déplacements : 0</div>
          </fieldset>
        </form>
