@@ -24,8 +24,8 @@ function afficher(){
      var update_properties = function(src) {
          var img = new Image();
          $(img).one('load', function() {
-             document.styleSheets[0].cssRules[0].style.setProperty("--item-w", ""+(img.width/nbCols)+"px");
-             document.styleSheets[0].cssRules[0].style.setProperty("--item-h", ""+(img.height/nbLignes)+"px");
+             document.styleSheets[0].cssRules[0].style.setProperty("--item-w", ""+((img.width/nbCols)-2)+"px");
+             document.styleSheets[0].cssRules[0].style.setProperty("--item-h", ""+((img.height/nbLignes)-2)+"px");
              document.styleSheets[0].cssRules[0].style.setProperty("--img-src", "url("+url+")");
              document.styleSheets[0].cssRules[0].style.setProperty("--font-s", ""+Math.max((img.height/(10*nbLignes)), 30)+"px");
              if(showNumbers){
@@ -58,7 +58,8 @@ function afficher(){
             item.id = ""+nbItems;
             $("tr."+i).append(item);
             $("td#"+nbItems).append(number);
-            $("td#"+nbItems).attr("style", "background-position:-"+((j-1)*100)+"% -"+((i-1)*100)+"%");
+            $("td#"+nbItems).attr("style", "background-position:-"+
+                ((j-1)*100)+"% -"+((i-1)*100)+"%");
             $("td#"+nbItems).click(function() {
                 return deplacer($(this));
             });
@@ -81,14 +82,41 @@ function brasser(){
 
 // Échange une tuile avec l'espace vide si celui-ci lui est adjacent
 function deplacer($tile){
-     //TODO : Gérer les déplacements verticaux
-     if($tile.next().hasClass("last")){
-        $tile.insertAfter("td.last");
+     //TODO : Mettre à jour nombre déplacements
+     var $next = $tile.next();
+     var $previous = $tile.prev();
+     var $parentRow = $tile.parent();
+     var tilePosition = $parentRow.children().index(document.getElementById($tile.attr("id")));
+          
+     if($next.hasClass("last")){
+        //droite
+        $tile.insertAfter($next);
         //deplacements++;
         return;
-     }else if($tile.prev().hasClass("last")){
-        $tile.insertBefore("td.last");
+     }else if($previous.hasClass("last")){
+        //gauche
+        $tile.insertBefore($previous);
         //deplacements++;
+        return;
+     }else if($parentRow.prev().children().eq(tilePosition).hasClass("last")){
+        //haut
+        $tile.insertBefore("td.last");
+        if($previous.length!= 0){
+            $("td.last").insertAfter($previous);
+        }else{
+            $("td.last").insertBefore($next);
+        }
+        //deplacements++
+        return;
+     }else if($parentRow.next().children().eq(tilePosition).hasClass("last")){
+        //bas
+        $tile.insertBefore("td.last");
+        if($previous.length!= 0){
+            $("td.last").insertAfter($previous);
+        }else{
+            $("td.last").insertBefore($next);
+        }
+        //deplacements++
         return;
      }else{
         alert("Déplacement impossible");
