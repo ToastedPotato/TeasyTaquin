@@ -6,6 +6,16 @@
     --visible: hidden; 
 }
 
+.last{
+    visibility: hidden;
+
+}
+
+td.last > *{
+    visibility: hidden;
+
+}
+
 td{
     text-align: center;
     width: var(--item-w);

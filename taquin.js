@@ -1,12 +1,14 @@
 $(document).ready(function(){
 
+//var deplacements = 0;
+
 // Button listeners 
 $('#afficher').click(function() {
- return afficher();
+    return afficher();
 });
 
 $('#brasser').click(function() {
- return brasser();
+    return brasser();
 });
 
 });
@@ -52,14 +54,16 @@ function afficher(){
         $("table").append(row);
         for(var j=1; j <= nbCols; j++) {
             var item = document.createElement("td");
-            item.classList.add(""+j);
             var number = "<p>"+nbItems+"</p>";
+            item.id = ""+nbItems;
             $("tr."+i).append(item);
-            $("tr."+i+" > td."+j).append(number);
-            $("tr."+i+" > td."+j).attr("style", "background-position:-"+((j-1)*100)+"% -"+((i-1)*100)+"%");
-            $("tr."+i+" > td."+j).attr("id", ""+nbItems);
+            $("td#"+nbItems).append(number);
+            $("td#"+nbItems).attr("style", "background-position:-"+((j-1)*100)+"% -"+((i-1)*100)+"%");
+            $("td#"+nbItems).click(function() {
+                return deplacer($(this));
+            });
             if(nbItems == nbLignes*nbCols){
-                $("tr."+i+" > td."+j).addClass("last");
+                $("td#"+nbItems).addClass("last");
             }
             nbItems++;
         }   
@@ -73,4 +77,22 @@ function brasser(){
      //TODO : shuffle tiles numbers
      // update display
      $("label").css("background-color", "red"); //temp test
+};
+
+// Échange une tuile avec l'espace vide si celui-ci lui est adjacent
+function deplacer($tile){
+     //TODO : Gérer les déplacements verticaux
+     if($tile.next().hasClass("last")){
+        $tile.insertAfter("td.last");
+        //deplacements++;
+        return;
+     }else if($tile.prev().hasClass("last")){
+        $tile.insertBefore("td.last");
+        //deplacements++;
+        return;
+     }else{
+        alert("Déplacement impossible");
+        return;
+     }
+        
 };
