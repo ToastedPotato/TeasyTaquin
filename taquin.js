@@ -57,6 +57,10 @@ function afficher(){
             $("tr."+i).append(item);
             $("tr."+i+" > td."+j).append(number);
             $("tr."+i+" > td."+j).attr("style", "background-position:-"+((j-1)*100)+"% -"+((i-1)*100)+"%");
+            $("tr."+i+" > td."+j).attr("id", ""+nbItems);
+            if(nbItems == nbLignes*nbCols){
+                $("tr."+i+" > td."+j).addClass("last");
+            }
             nbItems++;
         }   
      }
