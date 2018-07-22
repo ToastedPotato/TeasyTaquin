@@ -1,7 +1,23 @@
 :root{
-
+    --item-w: 0px;
+    --item-h: 0px;
+    --img-src: url("https://static.zerochan.net/Zero.Two.%28Darling.in.the.FranXX%29.full.2263353.jpg");
+    --font-s: 0px;
+    --visible: hidden; 
 }
 
-.piece{
+td{
+    text-align: center;
+    width: var(--item-w);
+    height: var(--item-h);
+    background-image: var(--img-src);
+    background-position: 0% 0%;
+}
 
+p{
+    font-weight: bold;
+    font-size: var(--font-s);
+    text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
+    visibility: var(--visible);
+    
 }
