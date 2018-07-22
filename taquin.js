@@ -25,7 +25,7 @@ function afficher(){
              document.styleSheets[0].cssRules[0].style.setProperty("--item-w", ""+(img.width/nbCols)+"px");
              document.styleSheets[0].cssRules[0].style.setProperty("--item-h", ""+(img.height/nbLignes)+"px");
              document.styleSheets[0].cssRules[0].style.setProperty("--img-src", "url("+url+")");
-             document.styleSheets[0].cssRules[0].style.setProperty("--font-s", ""+(img.height/20)+"px");
+             document.styleSheets[0].cssRules[0].style.setProperty("--font-s", ""+Math.max((img.height/(10*nbLignes)), 30)+"px");
              if(showNumbers){
                 document.styleSheets[0].cssRules[0].style.setProperty("--visible", "visible");
              }
