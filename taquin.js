@@ -34,13 +34,13 @@ function afficher(){
             var cssSheet = document.styleSheets[0];
             //if someone is using Internet Explorer
             var rules = cssSheet.cssRules || cssSheet.rules;   
-            rules[0].style.setProperty("--item-h", ""+(75/nbLignes)+"vh");
-            rules[0].style.setProperty("--item-w", ""+(img.width/img.height)*(75/nbCols)+"vh");
-            rules[0].style.setProperty("--img-src", "url("+url+")");
+            rules[14].style.setProperty("height", ""+(75/nbLignes)+"vh");
+            rules[14].style.setProperty("width", ""+(img.width/img.height)*(75/nbCols)+"vh");
+            rules[14].style.setProperty("background-image", "url("+url+")");
             if(showNumbers){
-                document.styleSheets[0].cssRules[0].style.setProperty("--visible", "visible");
+                rules[15].style.setProperty("visibility", "visible");
             }else{
-                document.styleSheets[0].cssRules[0].style.setProperty("--visible", "hidden");
+                rules[15].style.setProperty("visibility", "hidden");
             }
         });
         img.src = src;
@@ -252,24 +252,15 @@ function deplacerFleche(key){
 
 function verifierVictoire(){
     
-    var nbTiles = $("td").length;
-    var nbRows = $("tr").length;
-    var nbCols = nbTiles/nbRows;
+    var tiles = $("td");
     
-    // Pour chaque case
-    for(var i=1; i <= nbRows; i++){
-        for (var j=1; j <= nbCols; j++){
-        
-            var fullId = $("tr:nth-child(" + i + ") td:nth-child(" + j + ")").attr("id");
-            var currentId = fullId.substr(1, fullId.length);
-            var position = ((i-1)*nbCols) + j;
-            
-             // Verifier si la case est à la bonne position
-            if(Number(currentId) != position) {   
-                return false;
-            }
+    for(var i=0; i < tiles.length; i++){
+        if(tiles[i].id != $("td#t"+(i+1)).attr("id")) {   
+            return false;
         }
+    
     }
+    
     return true;
 };
 
