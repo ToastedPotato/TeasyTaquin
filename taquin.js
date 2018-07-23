@@ -47,7 +47,7 @@ function afficher(){
     };
           
     // if not valid, display message 
-    if(!url || !nbLignes || !nbCols) {
+    if(!url || !nbLignes || !nbCols || nbLignes <= 1 || nbCols <= 1) {
         alert("Valeurs invalides");
         return;
     }
@@ -101,40 +101,43 @@ function brasser(){
     var nbTiles = $("td").length;
     var nbRows = $("tr").length;
     var nbCols = nbTiles/nbRows;
-    var usedIds = [];
-     
-    for(var i=1; i <= nbRows; i++){
-        for (var j=0; j < nbCols; j++){
+
+    do{
+        var usedIds = [];
+        for(var i=1; i <= nbRows; i++){
+            for (var j=0; j < nbCols; j++){
             
-            var tileId = 0;
+                var tileId = 0;
            
-            //find a new random tile that isn't the last one
-            do{
-                tileId = Math.floor((Math.random()*(nbTiles-1))+1);
-            }while($.inArray(tileId, usedIds) != -1);
+                //find a new random tile that isn't the last one
+                do{
+                    tileId = Math.floor((Math.random()*(nbTiles-1))+1);
+                }while($.inArray(tileId, usedIds) != -1);
             
-            //add the tile to table and its id to the list of used tiles
-            $("tr."+i).append($("td#t"+tileId));
-            usedIds.push(tileId);
+                //add the tile to table and its id to the list of used tiles
+                $("tr."+i).append($("td#t"+tileId));
+                usedIds.push(tileId);
             
-            //to leave an empty space for final tile
-            if(i == nbRows && j == nbCols-2){j++}
-        }
-    }
-     
-    $("tr."+nbRows).append($("td.last"));
-    
+                //to leave an empty space for final tile
+                if(i == nbRows && j == nbCols-2){j++}
+            }
+        } 
+        $("tr."+nbRows).append($("td.last"));
+        
+    // TODO : rebrasse tant que la grille obtenue est identique a la grille de victoire - est-ce qu'on veut ca?
+    } while (verifierVictoire() == true);
+ 
     tuilesBrassees = true;
     deplacements = 0;
     $("#deplacement").text("Déplacements : "+deplacements);
-     
+    
+    alert("Nouvelle partie! Choisissez une case à bouger.")
 };
 
 // Échange une tuile avec l'espace vide si celui-ci lui est adjacent
 function deplacer($tile){
      if(!tuilesBrassees){return;}
      
-     //TODO : Vérifier victoire
      var $next = $tile.next();
      var $previous = $tile.prev();
      var $parentRow = $tile.parent();
@@ -145,13 +148,11 @@ function deplacer($tile){
         $tile.insertAfter($next);
         deplacements++;
         $("#deplacement").text("Déplacements : "+deplacements);
-        return;
      }else if($previous.hasClass("last")){
         //gauche
         $tile.insertBefore($previous);
         deplacements++;
         $("#deplacement").text("Déplacements : "+deplacements);
-        return;
      }else if($parentRow.prev().children().eq(tilePosition).hasClass("last")){
         //haut
         $tile.insertBefore("td.last");
@@ -162,7 +163,6 @@ function deplacer($tile){
         }
         deplacements++;
         $("#deplacement").text("Déplacements : "+deplacements);
-        return;
      }else if($parentRow.next().children().eq(tilePosition).hasClass("last")){
         //bas
         $tile.insertBefore("td.last");
@@ -173,17 +173,18 @@ function deplacer($tile){
         }
         deplacements++;
         $("#deplacement").text("Déplacements : "+deplacements);
-        return;
      }else{
         return;
      }
-        
+     
+    if(verifierVictoire()) {
+        appliquerVictoire();
+    }
 };
 
 function deplacerFleche(key){
     if(!tuilesBrassees){return;}
     
-    //TODO : vérifier victoire
     var id = $(".last").attr("id");
     var position = $(".last").parent().children().index(document.getElementById(id));
     var $adjacentUp = $(".last").parent().prev().children().eq(position);
@@ -244,4 +245,38 @@ function deplacerFleche(key){
     
     $("#deplacement").text("Déplacements : "+deplacements);
     
+    if(verifierVictoire()) {
+        appliquerVictoire();
+    }
+};
+
+function verifierVictoire(){
+    
+    var nbTiles = $("td").length;
+    var nbRows = $("tr").length;
+    var nbCols = nbTiles/nbRows;
+    
+    // Pour chaque case
+    for(var i=1; i <= nbRows; i++){
+        for (var j=1; j <= nbCols; j++){
+        
+            var fullId = $("tr:nth-child(" + i + ") td:nth-child(" + j + ")").attr("id");
+            var currentId = fullId.substr(1, fullId.length);
+            var position = ((i-1)*nbCols) + j;
+            
+             // Verifier si la case est à la bonne position
+            if(Number(currentId) != position) {   
+                return false;
+            }
+        }
+    }
+    return true;
+};
+
+
+function appliquerVictoire(){
+    alert("Félicitations! Vous avez gagné avec " + deplacements + " déplacements.");
+    tuilesBrassees = false;
+    deplacements = 0;
+    $("#deplacement").text("Déplacements : "+deplacements);
 };
