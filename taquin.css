@@ -1,8 +1,7 @@
 :root{
-    --item-w: 0px;
     --item-h: 0px;
+    --item-w: 0px;
     --img-src: url("https://static.zerochan.net/Zero.Two.%28Darling.in.the.FranXX%29.full.2263353.jpg");
-    --font-s: 0px;
     --visible: hidden; 
 }
 
@@ -12,16 +11,91 @@
 }
 
 td.last > *{
-    visibility: hidden;
+    visibility: inherit;
+
+}
+
+body{
+    height: 95vh;
+
+}
+
+#form{
+    height: 15%;
+
+}
+
+form{
+    height: 100%;
+
+}
+
+fieldset{
+    height: 100%;
+    box-sizing: border-box;
+    
+}
+
+.fields{
+    width: 100%;
+    height: 100%;
+
+}
+
+.formLine{
+    height: 45%;
+    width: 100%;
+    display: inline-block;
+    
+}
+
+.formLine > *{
+    max-height: 100%;
+    width: auto;
+
+}
+
+input{
+    box-sizing: border-box;    
+    
+}
+
+input.num{
+    width: 10%;
+
+}
+
+#deplacement{    
+    float: right;
+    font-size: 12pt;
+    width: 20%;
+    visibility: visible;
+    
+}
+
+#table{
+    height: 75%;
+
+}
+
+
+table{
+    height: 100%;
+    background-color: #777777;
+    border-radius: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    background-size: auto 75vh;
 
 }
 
 td{
     text-align: center;
-    width: var(--item-w);
-    height: var(--item-h);
     background-image: var(--img-src);
+    height: var(--item-h);
+    width: var(--item-w);
     background-position: 0% 0%;
+    background-size: auto 75vh;
     border-radius: 10px;
     margin: 0px;
     padding: 0px;
@@ -29,7 +103,7 @@ td{
 
 p{
     font-weight: bold;
-    font-size: var(--font-s);
+    font-size: 24pt;
     text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
     visibility: var(--visible);
     margin: 0px;
