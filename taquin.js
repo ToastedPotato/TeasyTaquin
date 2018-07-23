@@ -1,7 +1,5 @@
 $(document).ready(function(){
 
-//var deplacements = 0;
-
 // Button listeners 
 $('#afficher').click(function() {
     return afficher();
@@ -24,8 +22,8 @@ function afficher(){
      var update_properties = function(src) {
          var img = new Image();
          $(img).one('load', function() {
-             document.styleSheets[0].cssRules[0].style.setProperty("--item-w", ""+((img.width/nbCols)-2)+"px");
-             document.styleSheets[0].cssRules[0].style.setProperty("--item-h", ""+((img.height/nbLignes)-2)+"px");
+             document.styleSheets[0].cssRules[0].style.setProperty("--item-w", ""+(img.width/nbCols-2*nbCols)+"px");
+             document.styleSheets[0].cssRules[0].style.setProperty("--item-h", ""+(img.height/nbLignes-2*nbLignes)+"px");
              document.styleSheets[0].cssRules[0].style.setProperty("--img-src", "url("+url+")");
              document.styleSheets[0].cssRules[0].style.setProperty("--font-s", ""+Math.max((img.height/(10*nbLignes)), 30)+"px");
              if(showNumbers){
@@ -70,7 +68,10 @@ function afficher(){
         }   
      }
      
-     $("label").css("background-color", "green"); //temp test
+     //attaching arrow key listener to document
+     $(document).keyup(function(e){
+        return deplacerFleche(e.which);
+     });
 };
 
 // Mélange les tuiles du jeu existant
@@ -119,8 +120,69 @@ function deplacer($tile){
         //deplacements++
         return;
      }else{
-        alert("Déplacement impossible");
         return;
      }
         
+};
+
+function deplacerFleche(key){
+    
+    //TODO : Mettre à jour nombre déplacements
+    var id = $(".last").attr("id");
+    var position = $(".last").parent().children().index(document.getElementById(id));
+    var $adjacentUp = $(".last").parent().prev().children().eq(position);
+    var $adjacentDown = $(".last").parent().next().children().eq(position);
+          
+    switch (key){
+        
+        case 37:
+            //left
+            if($(".last").next().length != 0){
+                $(".last").insertAfter($(".last").next());
+                //deplacements++;
+            }
+            break;
+            
+        case 38:
+            //up
+            if($adjacentDown.length != 0){
+                var $previous = $adjacentDown.prev();
+                var $next = $adjacentDown.next();
+                
+                $adjacentDown.insertBefore("td.last");
+                
+                if($previous.length != 0){
+                    $("td.last").insertAfter($previous);
+                }else{
+                    $("td.last").insertBefore($next);
+                }
+                //deplacements++
+            }
+            break;
+            
+        case 39:
+            //right
+            if($(".last").prev().length != 0){
+                $(".last").insertBefore($(".last").prev());
+                //deplacements++;
+            }
+            break;
+            
+        case 40:
+            //down
+            if($adjacentUp.length != 0){
+                var $previous = $adjacentUp.prev();
+                var $next = $adjacentUp.next();
+                
+                $adjacentUp.insertBefore("td.last");
+                
+                if($previous.length != 0){
+                    $("td.last").insertAfter($previous);
+                }else{
+                    $("td.last").insertBefore($next);
+                }
+                //deplacements++
+            }
+            break;
+    }
 };
