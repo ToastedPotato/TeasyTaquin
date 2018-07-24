@@ -38,7 +38,7 @@ function afficher(){
             rules[14].style.setProperty("width", ""+(img.width/img.height)*(75/nbCols)+"vh");
             if(src.length > 0){
                 rules[14].style.setProperty("background-image", "url("+src+")");
-            }
+            }else{rules[14].style.setProperty("background-image", "url(default.jpg)");}
             if(showNumbers){
                 rules[15].style.setProperty("visibility", "visible");
             }else{
