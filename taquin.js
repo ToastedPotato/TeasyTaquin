@@ -97,35 +97,25 @@ function afficher(){
 
 //Mélange les tuiles du jeu existant
 function brasser(){
-    //TODO : Find an algorithm that involes less nested loops?
+    
     var nbTiles = $("td").length;
-    var nbRows = $("tr").length;
-    var nbCols = nbTiles/nbRows;
-
-    do{
-        var usedIds = [];
-        for(var i=1; i <= nbRows; i++){
-            for (var j=0; j < nbCols; j++){
-            
-                var tileId = 0;
-           
-                //find a new random tile that isn't the last one
-                do{
-                    tileId = Math.floor((Math.random()*(nbTiles-1))+1);
-                }while($.inArray(tileId, usedIds) != -1);
-            
-                //add the tile to table and its id to the list of used tiles
-                $("tr."+i).append($("td#t"+tileId));
-                usedIds.push(tileId);
-            
-                //to leave an empty space for final tile
-                if(i == nbRows && j == nbCols-2){j++}
-            }
-        } 
-        $("tr."+nbRows).append($("td.last"));
-        
+    
     // TODO : rebrasse tant que la grille obtenue est identique a la grille de victoire - est-ce qu'on veut ca?
-    } while (verifierVictoire() == true);
+    do{
+        for(var i=0; i < nbTiles*nbTiles/4; i++){
+            var dir = Math.floor((Math.random()*4)+1);
+            autoDeplacement(dir);    
+        }
+        
+        while($("td.last").parent().attr("class") != ""+($("tr").length)){
+            autoDeplacement(2);
+        }
+        
+        while($("td.last").attr("id") != $("td")[nbTiles-1].id){
+            autoDeplacement(1);
+        }
+                
+    }while (verifierVictoire() == true);
  
     tuilesBrassees = true;
     deplacements = 0;
@@ -249,6 +239,65 @@ function deplacerFleche(key){
         appliquerVictoire();
     }
 };
+
+function autoDeplacement(dir){
+    
+    var id = $(".last").attr("id");
+    var position = $(".last").parent().children().index(document.getElementById(id));
+    var $adjacentUp = $(".last").parent().prev().children().eq(position);
+    var $adjacentDown = $(".last").parent().next().children().eq(position);
+          
+    switch (dir){
+        
+        case 1:
+            //left
+            if($(".last").next().length != 0){
+                $(".last").insertAfter($(".last").next());
+            }
+            break;
+            
+        case 2:
+            //up
+            if($adjacentDown.length != 0){
+                var $previous = $adjacentDown.prev();
+                var $next = $adjacentDown.next();
+                
+                $adjacentDown.insertBefore("td.last");
+                
+                if($previous.length != 0){
+                    $("td.last").insertAfter($previous);
+                }else{
+                    $("td.last").insertBefore($next);
+                }
+            }
+            break;
+            
+        case 3:
+            //right
+            if($(".last").prev().length != 0){
+                $(".last").insertBefore($(".last").prev());
+            }
+            break;
+            
+        case 4:
+            //down
+            if($adjacentUp.length != 0){
+                var $previous = $adjacentUp.prev();
+                var $next = $adjacentUp.next();
+                
+                $adjacentUp.insertBefore("td.last");
+                
+                if($previous.length != 0){
+                    $("td.last").insertAfter($previous);
+                }else{
+                    $("td.last").insertBefore($next);
+                }
+            }
+            break;
+    }
+    return;
+    
+}
 
 function verifierVictoire(){
     
