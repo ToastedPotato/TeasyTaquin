@@ -1,0 +1,36 @@
+<!DOCTYPE html 
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
+        <title>Rapport TP2 - IFT3225</title>
+    </head>
+    <body>
+        <h1>Rapport TP2 - IFT3225</h1>
+        <p>Par Christophe Apollon-Roy (920403) et Amélie Lacombe Robillard (20016735)</p>
+        <p>26 juillet 2018</p>
+        <h3>Adresse du jeu sur les serveurs du Diro :</h3>
+        <p><a href="http://www-etud.iro.umontreal.ca/~apollonc/taquin.html">http://www-etud.iro.umontreal.ca/~apollonc/taquin.html</a></p>
+        <h3>Fichiers : </h3>
+        <ul><li><a href="taquin.html">taquin.html</a></li>
+            <li><a href="taquin.css">taquin.css</a></li>
+            <li><a href="taquin.js">taquin.js</a></li>
+        </ul>
+        <h2>Introduction</h2>
+        <p>Dans le cadre de ce projet, nous avons réalisé un jeu de taquin programmé côté client en Javascript à l’aide du framework JQuery.  </p>
+        <h2>Survol du code</h2>
+        <p>Le fichier html du projet contient les éléments fixes de la page, soit le formulaire de configuration du jeu et ses boutons, ainsi qu’un élément div servant à contenir la table du jeu générée en Javascript. Le code HTML de notre jeu respecte les règles de la validation XHTML stricte. Le fichier CSS contient les propriétés de mise en page de la table du jeu, lesquelles sont mise à jour dynamiquement lors de la génération de la table en Javascript.</p>
+        <p>Pour plus de clarté, le fichier Javascript de notre projet est structuré selon les fonctionnalités principales du jeu, soit l’affichage de la table, le brassage des cases, le déplacement de cases par clavier ou souris, la vérification des conditions de victoire et l’application de la victoire. La fonction JQuery ready() contient le code associant les fonctionnalités du jeu aux évènements JQuery. Des variables globales sont utilisées pour garder trace de l’état courant de la partie. </p>
+		<h2>Problèmes rencontrés et solutions</h2>
+		<h3>Affichage de la grille</h3>
+        <p>La première difficulté rencontrée a été l’affichage de la grille du jeu. Si récupérer les informations nécessaires du formulaire et générer dynamiquement une table DOM de bonne taille a été plutôt simple, ajuster la taille des cases selon la taille de l’image et découper l’image pour chaque case s’est révélé plus complexe. Pour se faire, nous avons dû d’abord récupérer la taille en pixel de l’image lors de son chargement et l’utiliser pour calculer la taille des cases et mettre à jour dynamiquement les propriétés CSS associées. Pour le découpage de l’image, nous avons choisis d'utiliser la propriété CSS <i>background-position</i>, calculant le décalage de l’image à partir de la position de la case courante et de la taille des cases, et associant cette valeur directement à chaque élément td. </p>
+		<p>Finalement, pour des raisons de visibilité, nous avons choisis d’imposer une taille minimale aux cases afin que le jeu reste jouable même si l’usager fournis une très petite image. </p>
+		<h3>Algorithme de brassage</h3>
+        <p>Notre premier essai d’algorithme de brassage générait aléatoirement une configuration de la grille appliquant des permutations à chacune des cases. Cependant, les configurations résultantes étaient parfois identiques à la configuration initiale ou encore impossibles à résoudre (problème particulièrement fréquent sur des grilles de petites tailles). Pour résoudre ce problème, nous avons conçu un nouvel algorithme qui génère une configuration à partir d’une séquence aléatoire de déplacements permis, assurant que la configuration résultante est toujours possible à résoudre, et y avons ajouté une condition vérifiant que la configuration ainsi produite est différente de la configuration gagnante.  </p>
+		<p>À cause de ces conditions supplémentaires, nous avons choisis de restreindre la taille de la grille à un minimum de 2 par 2, les grilles plus petites étant impossible à brasser de façon à être non-triviales et solubles.</p>
+		<h3>Algorithme de victoire</h3>
+        <p>La conception de l’algorithme vérifiant les conditions de victoire a été relativement simple comparé à l’algorithme de brassage. Chacune de nos cases étant déjà identifiées par un id unique correspondant à leur position initiale (indexé à 1), il suffit à notre algorithme d’effectuer un parcours de la structure DOM de la table et de vérifier que l’id de chaque case correspond à sa position. Si cette condition est remplie pour toutes les cases, la grille est ordonnée et les conditions de victoire sont donc satisfaites. </p>
+        <h2>Conclusion</h2>
+        <p>Ce projet nous a permis de mettre en pratique les notions de programmation côté client vues en classe et de nous a sensibiliser à certains enjeux de la programmation web tels que la compatibilité avec différents navigateurs. Apprendre et maitriser le framework JQuery et ses particularités (fonctions de parcours d’arbre, non-compatibilité entre les fonctions JQuery et les objets DOM javascript et vice-versa) a été la partie la plus exigeante du travail. </p>
+    </body>
+</html>
