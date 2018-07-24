@@ -36,18 +36,22 @@ function afficher(){
             var rules = cssSheet.cssRules || cssSheet.rules;   
             rules[14].style.setProperty("height", ""+(75/nbLignes)+"vh");
             rules[14].style.setProperty("width", ""+(img.width/img.height)*(75/nbCols)+"vh");
-            rules[14].style.setProperty("background-image", "url("+url+")");
+            if(src.length > 0){
+                rules[14].style.setProperty("background-image", "url("+src+")");
+            }
             if(showNumbers){
                 rules[15].style.setProperty("visibility", "visible");
             }else{
                 rules[15].style.setProperty("visibility", "hidden");
             }
         });
-        img.src = src;
+        if(src.length > 0){
+            img.src = src;
+        }else{img.src = "default.jpg";}
     };
           
     // if not valid, display message 
-    if(!url || !nbLignes || !nbCols || nbLignes <= 1 || nbCols <= 1) {
+    if(nbLignes < 2 || nbCols < 2) {
         alert("Valeurs invalides");
         return;
     }
@@ -100,7 +104,7 @@ function brasser(){
     
     var nbTiles = $("td").length;
     
-    // TODO : rebrasse tant que la grille obtenue est identique a la grille de victoire - est-ce qu'on veut ca?
+    //Brasse tant que la grille obtenue est identique à la grille de victoire
     do{
         for(var i=0; i < nbTiles*nbTiles/4; i++){
             var dir = Math.floor((Math.random()*4)+1);
