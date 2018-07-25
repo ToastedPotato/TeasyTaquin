@@ -20,9 +20,12 @@ var tuilesBrassees = false;
 
 var deplacements = 0;
 
+//le chemin suivi par l'ordinateur lors du brassage. Utile pour débogger/tricher
+var path = "";
+
 // Affiche un nouveau jeu
 function afficher(){
-    //Get info from form
+    //informations du formulaire
     var url = $('#form input[name="url"]').val();
     var nbLignes = Number($('#form input[name="lignes"]').val());
     var nbCols = Number($('#form input[name="colonnes"]').val());
@@ -32,13 +35,14 @@ function afficher(){
         var img = new Image();
         $(img).one('load', function() {
             var cssSheet = document.styleSheets[0];
-            //if someone is using Internet Explorer
+            //support pour Internet Explorer
             var rules = cssSheet.cssRules || cssSheet.rules;   
             rules[14].style.setProperty("height", ""+(75/nbLignes)+"vh");
-            rules[14].style.setProperty("width", ""+(img.width/img.height)*(75/nbCols)+"vh");
+            rules[14].style.setProperty("width", ""+
+                (img.width/img.height)*(75/nbCols)+"vh");
             if(src.length > 0){
                 rules[14].style.setProperty("background-image", "url("+src+")");
-            }else{rules[14].style.setProperty("background-image", "url(default.jpg)");}
+            }
             if(showNumbers){
                 rules[15].style.setProperty("visibility", "visible");
             }else{
@@ -50,16 +54,16 @@ function afficher(){
         }else{img.src = "default.jpg";}
     };
           
-    // if not valid, display message 
+    //si infos (URL, dimensions) invalides 
     if(nbLignes < 2 || nbCols < 2) {
         alert("Valeurs invalides");
         return;
     }
      
-    //updating the CSS custom properties
+    //CSS mis à jour
     update_properties(url);     
      
-    //Remove old table (if applicable), generate table and display img+numbers
+    //éliminer ancienne table
     if($("table").length > 0){$("table").remove();}
      
     $("#table").append(document.createElement("table"));     
@@ -79,6 +83,7 @@ function afficher(){
             item.id = "t"+nbItems;
             $("tr."+i).append(item);
             $("td#t"+nbItems).append(number);
+            //positionnement de l'image
             $("td#t"+nbItems).attr("style", "background-position:-"+
                 ((j-1)*100)+"% -"+((i-1)*100)+"%");
             
@@ -89,26 +94,44 @@ function afficher(){
         }   
     }
     
-    //click listener added to the shuffled tiles to permit play
+    //click listener pour jouer
     $("td").click(function() {
         return deplacer($(this));
     });
     
     tuilesBrassees = false;
     $("#deplacement").text("Déplacements : 0");
-     
+    path = ""; 
 };
 
 //Mélange les tuiles du jeu existant
 function brasser(){
     
     var nbTiles = $("td").length;
+    var rows = $("tr").length;
+    var instaWin = verifierVictoire();
+    
+    //le joueur veut rebrasser; tuiles remises en ordre avant brassage 
+    if(tuilesBrassees){
+        var current = 1;
+        for(var i=1; i > rows; i++){
+            $("tr."+i).append($("td#t"+current));
+            current++;             
+        }
+        instaWin = true;
+        path = "";
+    }
+    
+    //brassage après une victoire; la dernière tuile doit redevenir invisible
+    if(!($("td#t"+nbTiles).hasClass("last"))){
+        $("td#t"+nbTiles).toggleClass("last");
+    }
     
     //Brasse tant que la grille obtenue est identique à la grille de victoire
-    do{
-        for(var i=0; i < nbTiles*nbTiles/4; i++){
+    while(instaWin){                
+        for(var i=0; i < nbTiles*(nbTiles/4); i++){
             var dir = Math.floor((Math.random()*4)+1);
-            autoDeplacement(dir);    
+            autoDeplacement(dir);     
         }
         
         while($("td.last").parent().attr("class") != ""+($("tr").length)){
@@ -118,36 +141,49 @@ function brasser(){
         while($("td.last").attr("id") != $("td")[nbTiles-1].id){
             autoDeplacement(1);
         }
-                
-    }while (verifierVictoire() == true);
+        
+        instaWin = verifierVictoire();
+        if(instaWin){path = "";}                
+    }
+        
+    var found = true;
+    
+    //élimination des déplacements inutiles de l'ordinateur
+    while(found){
+        var prevPath = path;
+        
+        path = path.replace(/13/g, "");
+        path = path.replace(/31/g, "");
+        path = path.replace(/24/g, "");
+        path = path.replace(/42/g, "");
+        
+        found = (path.length != prevPath.length);    
+    }
  
     tuilesBrassees = true;
     deplacements = 0;
-    $("#deplacement").text("Déplacements : "+deplacements);
-    
+    $("#deplacement").text("Déplacements : "+deplacements);        
     alert("Nouvelle partie! Choisissez une case à bouger.")
 };
 
 // Échange une tuile avec l'espace vide si celui-ci lui est adjacent
 function deplacer($tile){
-     if(!tuilesBrassees){return;}
+    if(!tuilesBrassees){return;}
      
-     var $next = $tile.next();
-     var $previous = $tile.prev();
-     var $parentRow = $tile.parent();
-     var tilePosition = $parentRow.children().index(document.getElementById($tile.attr("id")));
+    var $next = $tile.next();
+    var $previous = $tile.prev();
+    var $parentRow = $tile.parent();
+    var tilePosition = $parentRow.children().index($tile[0]);
           
-     if($next.hasClass("last")){
+    if($next.hasClass("last")){
         //droite
         $tile.insertAfter($next);
         deplacements++;
-        $("#deplacement").text("Déplacements : "+deplacements);
-     }else if($previous.hasClass("last")){
+    }else if($previous.hasClass("last")){
         //gauche
         $tile.insertBefore($previous);
         deplacements++;
-        $("#deplacement").text("Déplacements : "+deplacements);
-     }else if($parentRow.prev().children().eq(tilePosition).hasClass("last")){
+    }else if($parentRow.prev().children().eq(tilePosition).hasClass("last")){
         //haut
         $tile.insertBefore("td.last");
         if($previous.length!= 0){
@@ -156,8 +192,7 @@ function deplacer($tile){
             $("td.last").insertBefore($next);
         }
         deplacements++;
-        $("#deplacement").text("Déplacements : "+deplacements);
-     }else if($parentRow.next().children().eq(tilePosition).hasClass("last")){
+    }else if($parentRow.next().children().eq(tilePosition).hasClass("last")){
         //bas
         $tile.insertBefore("td.last");
         if($previous.length!= 0){
@@ -166,71 +201,69 @@ function deplacer($tile){
             $("td.last").insertBefore($next);
         }
         deplacements++;
-        $("#deplacement").text("Déplacements : "+deplacements);
-     }else{
+    }else{
         return;
-     }
-     
-    if(verifierVictoire()) {
-        appliquerVictoire();
     }
+    
+    $("#deplacement").text("Déplacements : "+deplacements); 
+    if(verifierVictoire()) {appliquerVictoire();}
 };
 
 function deplacerFleche(key){
     if(!tuilesBrassees){return;}
     
-    var id = $(".last").attr("id");
-    var position = $(".last").parent().children().index(document.getElementById(id));
-    var $adjacentUp = $(".last").parent().prev().children().eq(position);
-    var $adjacentDown = $(".last").parent().next().children().eq(position);
+    var $last = $(".last");
+    var position = $last.parent().children().index($last[0]);
+    var $adjacentUp = $last.parent().prev().children().eq(position);
+    var $adjacentDown = $last.parent().next().children().eq(position);
           
     switch (key){
         
         case 37:
-            //left
-            if($(".last").next().length != 0){
-                $(".last").insertAfter($(".last").next());
+            //gauche
+            if($last.next().length != 0){
+                $last.insertAfter($last.next());
                 deplacements++;
             }
             break;
             
         case 38:
-            //up
+            //haut
             if($adjacentDown.length != 0){
                 var $previous = $adjacentDown.prev();
                 var $next = $adjacentDown.next();
                 
-                $adjacentDown.insertBefore("td.last");
+                $adjacentDown.insertBefore($last);
                 
                 if($previous.length != 0){
-                    $("td.last").insertAfter($previous);
+                    $last.insertAfter($previous);
                 }else{
-                    $("td.last").insertBefore($next);
+                    $last.insertBefore($next);
                 }
                 deplacements++;
             }
             break;
             
         case 39:
-            //right
-            if($(".last").prev().length != 0){
-                $(".last").insertBefore($(".last").prev());
+            //droite
+            if($last.prev().length != 0){
+                $last.insertBefore($last.prev());
                 deplacements++;
             }
             break;
             
         case 40:
-            //down
+            //bas
             if($adjacentUp.length != 0){
                 var $previous = $adjacentUp.prev();
                 var $next = $adjacentUp.next();
                 
-                $adjacentUp.insertBefore("td.last");
+                $adjacentUp.insertBefore($last);
                 
                 if($previous.length != 0){
-                    $("td.last").insertAfter($previous);
+                    $last.insertAfter($previous);
                 }else{
-                    $("td.last").insertBefore($next);
+                    $last.insertBefore($next);
                 }
                 deplacements++;
             }
@@ -239,63 +272,66 @@ function deplacerFleche(key){
     
     $("#deplacement").text("Déplacements : "+deplacements);
     
-    if(verifierVictoire()) {
-        appliquerVictoire();
-    }
+    if(verifierVictoire()) {appliquerVictoire();}
 };
 
+//routine pour le brassage
 function autoDeplacement(dir){
     
-    var id = $(".last").attr("id");
-    var position = $(".last").parent().children().index(document.getElementById(id));
-    var $adjacentUp = $(".last").parent().prev().children().eq(position);
-    var $adjacentDown = $(".last").parent().next().children().eq(position);
+    var $last = $(".last");
+    var position = $last.parent().children().index($last[0]);
+    var $adjacentUp = $last.parent().prev().children().eq(position);
+    var $adjacentDown = $last.parent().next().children().eq(position);
           
     switch (dir){
         
         case 1:
-            //left
-            if($(".last").next().length != 0){
-                $(".last").insertAfter($(".last").next());
+            //gauche
+            if($last.next().length != 0){
+                $last.insertAfter($last.next());
+                path+= ""+dir;
             }
             break;
             
         case 2:
-            //up
+            //haut
             if($adjacentDown.length != 0){
                 var $previous = $adjacentDown.prev();
                 var $next = $adjacentDown.next();
                 
-                $adjacentDown.insertBefore("td.last");
+                $adjacentDown.insertBefore($last);
                 
                 if($previous.length != 0){
-                    $("td.last").insertAfter($previous);
+                    $last.insertAfter($previous);
                 }else{
-                    $("td.last").insertBefore($next);
+                    $last.insertBefore($next);
                 }
+                path+= ""+dir;
             }
             break;
             
         case 3:
-            //right
-            if($(".last").prev().length != 0){
-                $(".last").insertBefore($(".last").prev());
+            //droite
+            if($last.prev().length != 0){
+                $last.insertBefore($last.prev());
+                path+= ""+dir;
             }
             break;
             
         case 4:
-            //down
+            //bas
             if($adjacentUp.length != 0){
                 var $previous = $adjacentUp.prev();
                 var $next = $adjacentUp.next();
                 
-                $adjacentUp.insertBefore("td.last");
+                $adjacentUp.insertBefore($last);
                 
                 if($previous.length != 0){
-                    $("td.last").insertAfter($previous);
+                    $last.insertAfter($previous);
                 }else{
-                    $("td.last").insertBefore($next);
+                    $last.insertBefore($next);
                 }
+                path+= ""+dir;                                
             }
             break;
     }
@@ -310,8 +346,7 @@ function verifierVictoire(){
     for(var i=0; i < tiles.length; i++){
         if(tiles[i].id != $("td#t"+(i+1)).attr("id")) {   
             return false;
-        }
-    
+        }    
     }
     
     return true;
@@ -319,8 +354,13 @@ function verifierVictoire(){
 
 
 function appliquerVictoire(){
-    alert("Félicitations! Vous avez gagné avec " + deplacements + " déplacements.");
+    alert("Félicitations! Vous avez gagné avec "+deplacements+" déplacements.\n Solution optimale: "+path.length+" déplacements.");
+    
+    //dernière tuile visible pour récompenser le joueur
+    $("td#t"+$("td").length).toggleClass("last");
+    
     tuilesBrassees = false;
     deplacements = 0;
     $("#deplacement").text("Déplacements : "+deplacements);
+    path = "";
 };
