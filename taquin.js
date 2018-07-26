@@ -40,14 +40,14 @@ function afficher(){
         $(img).one('load', function() {               
             rules[14].style.setProperty("height", ""+(75/nbLignes)+"vh");
             rules[14].style.setProperty("width", ""+
-                (img.width/img.height)*(75/nbCols)+"vh");
+                (img.width/img.height)*(75/nbLignes)+"vh");
             if(src.length > 0){
                 rules[14].style.setProperty("background-image", "url(\""+src+"\")");
             }
             if(showNumbers){
-                rules[15].style.setProperty("visibility", "visible");
+                rules[16].style.setProperty("display", "initial");
             }else{
-                rules[15].style.setProperty("visibility", "hidden");
+                rules[16].style.setProperty("display", "none");
             }
         });
         if(src.length > 0){
@@ -84,9 +84,9 @@ function afficher(){
             item.id = "t"+nbItems;
             $("tr."+i).append(item);
             $("td#t"+nbItems).append(number);
-            //position image par ajout de règle CSS pour balisage sémantique
-            cssSheet.insertRule("td#t"+nbItems+"{"+"background-position: -"+
-                ((j-1)*100)+"% -"+((i-1)*100)+"%;\ "+"}", rules.length);
+            //positionnement de l'image
+            $("td#t"+nbItems).attr("style", "background-position: -"+
+                ((j-1)*100)+"% -"+((i-1)*100)+"%");
             
             if(nbItems == nbLignes*nbCols){
                 $("td#t"+nbItems).addClass("last");

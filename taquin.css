@@ -62,7 +62,6 @@ input.num{
     float: right;
     font-size: 12pt;
     width: 20%;
-    visibility: visible;
     
 }
 
@@ -97,7 +96,11 @@ p{
     font-weight: bold;
     font-size: 24pt;
     text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
-    visibility: hidden;
     margin: 0px;
     
+}
+
+td > p{
+    display: none;
+
 }
