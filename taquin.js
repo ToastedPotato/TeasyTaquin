@@ -30,18 +30,19 @@ function afficher(){
     var nbLignes = Number($('#form input[name="lignes"]').val());
     var nbCols = Number($('#form input[name="colonnes"]').val());
     var showNumbers = $('#form input[name="numeros"]').is(':checked');
+    
+    var cssSheet = document.styleSheets[0];
+    //support pour Internet Explorer
+    var rules = cssSheet.cssRules || cssSheet.rules;
                         
     var update_properties = function(src) {
         var img = new Image();
-        $(img).one('load', function() {
-            var cssSheet = document.styleSheets[0];
-            //support pour Internet Explorer
-            var rules = cssSheet.cssRules || cssSheet.rules;   
+        $(img).one('load', function() {               
             rules[14].style.setProperty("height", ""+(75/nbLignes)+"vh");
             rules[14].style.setProperty("width", ""+
                 (img.width/img.height)*(75/nbCols)+"vh");
             if(src.length > 0){
-                rules[14].style.setProperty("background-image", "url("+src+")");
+                rules[14].style.setProperty("background-image", "url(\""+src+"\")");
             }
             if(showNumbers){
                 rules[15].style.setProperty("visibility", "visible");
@@ -51,7 +52,7 @@ function afficher(){
         });
         if(src.length > 0){
             img.src = src;
-        }else{img.src = "default.jpg";}
+        }else{img.src = rules[14].style.getPropertyValue("background-image").slice(5, -2);}
     };
           
     //si infos (URL, dimensions) invalides 
@@ -83,9 +84,9 @@ function afficher(){
             item.id = "t"+nbItems;
             $("tr."+i).append(item);
             $("td#t"+nbItems).append(number);
-            //positionnement de l'image
-            $("td#t"+nbItems).attr("style", "background-position:-"+
-                ((j-1)*100)+"% -"+((i-1)*100)+"%");
+            //position image par ajout de règle CSS pour balisage sémantique
+            cssSheet.insertRule("td#t"+nbItems+"{"+"background-position: -"+
+                ((j-1)*100)+"% -"+((i-1)*100)+"%;\ "+"}", rules.length);
             
             if(nbItems == nbLignes*nbCols){
                 $("td#t"+nbItems).addClass("last");
