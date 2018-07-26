@@ -40,15 +40,10 @@ function afficher(){
         $(img).one('load', function() {               
             rules[14].style.setProperty("height", ""+(75/nbLignes)+"vh");
             rules[14].style.setProperty("width", ""+
-                (img.width/img.height)*(75/nbLignes)+"vh");
+                (img.width/img.height)*(75/nbCols)+"vh");
             if(src.length > 0){
                 rules[14].style.setProperty("background-image", "url(\""+src+"\")");
-            }
-            if(showNumbers){
-                rules[16].style.setProperty("display", "initial");
-            }else{
-                rules[16].style.setProperty("display", "none");
-            }
+            }            
         });
         if(src.length > 0){
             img.src = src;
@@ -94,6 +89,8 @@ function afficher(){
             nbItems++;
         }   
     }
+    //affichage des numéros
+    if(!showNumbers){ $("td > p").toggleClass("invisible");}
     
     //click listener pour jouer
     $("td").click(function() {
