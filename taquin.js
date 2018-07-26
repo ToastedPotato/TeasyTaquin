@@ -109,14 +109,17 @@ function brasser(){
     
     var nbTiles = $("td").length;
     var rows = $("tr").length;
+    var cols = nbTiles/rows;
     var instaWin = verifierVictoire();
     
     //le joueur veut rebrasser; tuiles remises en ordre avant brassage 
     if(tuilesBrassees){
         var current = 1;
-        for(var i=1; i > rows; i++){
-            $("tr."+i).append($("td#t"+current));
-            current++;             
+        for(var i=1; i <= rows; i++){
+            for(var j=1; j <= cols; j++){
+                $("tr."+i).append($("td#t"+current));
+                current++;
+            }             
         }
         instaWin = true;
         path = "";
@@ -152,11 +155,7 @@ function brasser(){
     while(found){
         var prevPath = path;
         
-        path = path.replace(/13/g, "");
-        path = path.replace(/31/g, "");
-        path = path.replace(/24/g, "");
-        path = path.replace(/42/g, "");
-        
+        path = path.replace(/(13|31|24|42)/g, "");
         found = (path.length != prevPath.length);    
     }
  
@@ -185,21 +184,11 @@ function deplacer($tile){
         deplacements++;
     }else if($parentRow.prev().children().eq(tilePosition).hasClass("last")){
         //haut
-        $tile.insertBefore("td.last");
-        if($previous.length!= 0){
-            $("td.last").insertAfter($previous);
-        }else{
-            $("td.last").insertBefore($next);
-        }
+        permutationVerticale($("td.last"), $tile);
         deplacements++;
     }else if($parentRow.next().children().eq(tilePosition).hasClass("last")){
         //bas
-        $tile.insertBefore("td.last");
-        if($previous.length!= 0){
-            $("td.last").insertAfter($previous);
-        }else{
-            $("td.last").insertBefore($next);
-        }
+        permutationVerticale($("td.last"), $tile);
         deplacements++;
     }else{
         return;
@@ -230,16 +219,7 @@ function deplacerFleche(key){
         case 38:
             //haut
             if($adjacentDown.length != 0){
-                var $previous = $adjacentDown.prev();
-                var $next = $adjacentDown.next();
-                
-                $adjacentDown.insertBefore($last);
-                
-                if($previous.length != 0){
-                    $last.insertAfter($previous);
-                }else{
-                    $last.insertBefore($next);
-                }
+                permutationVerticale($last, $adjacentDown);
                 deplacements++;
             }
             break;
@@ -255,16 +235,7 @@ function deplacerFleche(key){
         case 40:
             //bas
             if($adjacentUp.length != 0){
-                var $previous = $adjacentUp.prev();
-                var $next = $adjacentUp.next();
-                
-                $adjacentUp.insertBefore($last);
-                
-                if($previous.length != 0){
-                    $last.insertAfter($previous);
-                }else{
-                    $last.insertBefore($next);
-                }
+                permutationVerticale($last, $adjacentUp);
                 deplacements++;
             }
             break;
@@ -275,7 +246,7 @@ function deplacerFleche(key){
     if(verifierVictoire()) {appliquerVictoire();}
 };
 
-//routine pour le brassage
+//méthode pour le brassage
 function autoDeplacement(dir){
     
     var $last = $(".last");
@@ -296,16 +267,7 @@ function autoDeplacement(dir){
         case 2:
             //haut
             if($adjacentDown.length != 0){
-                var $previous = $adjacentDown.prev();
-                var $next = $adjacentDown.next();
-                
-                $adjacentDown.insertBefore($last);
-                
-                if($previous.length != 0){
-                    $last.insertAfter($previous);
-                }else{
-                    $last.insertBefore($next);
-                }
+                permutationVerticale($last, $adjacentDown);
                 path+= ""+dir;
             }
             break;
@@ -321,16 +283,7 @@ function autoDeplacement(dir){
         case 4:
             //bas
             if($adjacentUp.length != 0){
-                var $previous = $adjacentUp.prev();
-                var $next = $adjacentUp.next();
-                
-                $adjacentUp.insertBefore($last);
-                
-                if($previous.length != 0){
-                    $last.insertAfter($previous);
-                }else{
-                    $last.insertBefore($next);
-                }
+                permutationVerticale($last, $adjacentUp);
                 path+= ""+dir;                                
             }
             break;
@@ -339,12 +292,27 @@ function autoDeplacement(dir){
     
 }
 
+//permuter 2 tuiles verticalement
+function permutationVerticale($tile, $adjacent){
+    var $previous = $adjacent.prev();
+    var $next = $adjacent.next();
+    
+    $adjacent.insertBefore($tile);
+    
+    if($previous.length != 0){
+        $tile.insertAfter($previous);
+    }else{
+        $tile.insertBefore($next);
+    }
+
+}
+
 function verifierVictoire(){
     
     var tiles = $("td");
     
     for(var i=0; i < tiles.length; i++){
-        if(tiles[i].id != $("td#t"+(i+1)).attr("id")) {   
+        if(tiles[i].id != "t"+(i+1)) {   
             return false;
         }    
     }
